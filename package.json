@@ -1,0 +1,23 @@
+{
+  "name": "milkbox_funnels_distributor",
+  "version": "1.0.0",
+  "description": "distribute files stored on AWS S3 to multiple external CDN Providers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node scripts/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/milkboxltd/milkbox_funnels_distributor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/milkboxltd/milkbox_funnels_distributor/issues"
+  },
+  "homepage": "https://github.com/milkboxltd/milkbox_funnels_distributor#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  }
+}

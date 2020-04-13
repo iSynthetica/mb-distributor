@@ -1,0 +1,47 @@
+dist: xenial
+language: node_js
+node_js:
+  - 10
+
+addons:
+  snaps:
+    - name: aws-cli
+      classic: true
+      channel: latest/stable
+
+before_install:
+  - pyenv global 3.7.1
+  - pip install -U pip
+
+before_script:
+  - 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
+  - 'export PATH=$PATH:/home/linuxbrew/.linuxbrew/bin'
+  - 'brew --version'
+  - 'brew tap aws/tap'
+  - 'brew install aws-sam-cli'
+  - 'aws --version'
+  - 'sam --version'
+  - 'npm install'
+  - 'npm install newman'
+  - 'cd dependencies/nodejs && npm install && cd ../..'
+
+jobs:
+  include:
+    - stage: deploy
+      name: Milkbox Funnels Distributor to Staging
+      if: type = push AND tag =~ ^staging-deploy-.*$
+      env: environment=staging
+      script:
+        - npm run build
+        - sam validate
+        - sam package --template-file template.yaml --s3-bucket prod-milkbox-cloudformation-templates --output-template-file out.yaml
+        - sam deploy --template-file ./out.yaml --stack-name mb-funnels-distributor-staging --capabilities CAPABILITY_IAM --parameter-overrides Environment=staging
+    - stage: deploy
+      name: Milkbox Funnels Distributor to Production
+      if: type = push AND tag =~ ^deploy-.*$
+      env: environment=production
+      script:
+        - npm run build
+        - sam validate
+        - sam package --template-file template.yaml --s3-bucket prod-milkbox-cloudformation-templates --output-template-file out.yaml
+        - sam deploy --template-file ./out.yaml --stack-name mb-funnels-distributor-production --capabilities CAPABILITY_IAM --parameter-overrides Environment=production

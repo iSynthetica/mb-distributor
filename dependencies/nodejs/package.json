@@ -1,0 +1,16 @@
+{
+  "name": "milkbox_funnels_distributor_shared",
+  "version": "1.0.0",
+  "description": "",
+  "main": "common.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/storage": "^4.7.0",
+    "aws-sdk": "^2.655.0",
+    "p-queue": "^6.3.0"
+  }
+}
