@@ -3,34 +3,26 @@ language: node_js
 node_js:
   - 10
 
-addons:
-  snaps:
-    - name: aws-cli
-      classic: true
-      channel: latest/stable
-
 before_install:
-  - pyenv global 3.7.1
-  - pip install -U pip
+  export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION_MB_DIST}
 
 before_script:
-  - 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
-  - 'export PATH=$PATH:/home/linuxbrew/.linuxbrew/bin'
-  - 'brew --version'
-  - 'brew tap aws/tap'
-  - 'brew install aws-sam-cli'
-  - 'aws --version'
-  - 'sam --version'
-  - 'npm install'
-  - 'npm install newman'
-  - 'cd dependencies/nodejs && npm install && cd ../..'
+  - npm install -g serverless
+  - serverless --version
+  - npm install
+  - cd dependencies/nodejs && npm install && cd ../..
 
 jobs:
   include:
     - stage: deploy
       name: Milkbox Funnels Distributor to Staging
       if: type = push AND tag =~ ^staging-deploy-.*$
-      env: environment=staging
+      env:
+        - environment=staging
+        - googleBucket=mb-funnels-bucket-snth
+        - awsBucket=funnel-origin-bucket-snth
+        - accessKeyId=${AWS_DEFAULT_REGION_MB_DIST}
+        - secretAccessKey=Gu6uk1HpIsBqj3fwxxa6Q4UvIYdW6JAJVNvUF36Y
       script:
         - npm run build
         - sam validate
