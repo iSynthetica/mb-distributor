@@ -4,7 +4,7 @@ node_js:
   - 10
 
 before_install:
-  export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION_MB_DIST}
+  export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION_MBDIST}
 
 before_script:
   - npm install -g serverless
