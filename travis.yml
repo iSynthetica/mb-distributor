@@ -19,21 +19,26 @@ jobs:
       if: type = push AND tag =~ ^staging-deploy-.*$
       env:
         - environment=staging
-        - googleBucket=mb-funnels-bucket-snth
-        - awsBucket=funnel-origin-bucket-snth
-        - accessKeyId=${AWS_DEFAULT_REGION_MB_DIST}
-        - secretAccessKey=Gu6uk1HpIsBqj3fwxxa6Q4UvIYdW6JAJVNvUF36Y
+        - destGoogleBucket=${GOOGLE_BUCKET_MBDIST_DEST_STAGING}
+        - destAwsBucket=${AWS_BUCKET_MBDIST_DEST_STAGING}
+        - destAwsAccessKeyId=${AWS_ACCESS_KEY_ID_MBDIST_DEST_STAGING}
+        - destAwsSecretAccessKey=${AWS_SECRET_ACCESS_KEY_MBDIST_DEST_STAGING}
       script:
+        - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MBDIST_STAGING}
+        - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MBDIST_STAGING}
         - npm run build
-        - sam validate
-        - sam package --template-file template.yaml --s3-bucket prod-milkbox-cloudformation-templates --output-template-file out.yaml
-        - sam deploy --template-file ./out.yaml --stack-name mb-funnels-distributor-staging --capabilities CAPABILITY_IAM --parameter-overrides Environment=staging
+        - serverless deploy --stage staging --deploymentbucket milkbox-cloudformation-templates --assetsbucket ${AWS_BUCKET_MBDIST_ASSETS_STAGING} -v
     - stage: deploy
       name: Milkbox Funnels Distributor to Production
       if: type = push AND tag =~ ^deploy-.*$
-      env: environment=production
+      env:
+        - environment=production
+        - destGoogleBucket=${GOOGLE_BUCKET_MBDIST_DEST_PROD}
+        - destAwsBucket=${AWS_BUCKET_MBDIST_DEST_PROD}
+        - destAwsAccessKeyId=${AWS_ACCESS_KEY_ID_MBDIST_DEST_PROD}
+        - destAwsSecretAccessKey=${AWS_SECRET_ACCESS_KEY_MBDIST_DEST_PROD}
       script:
+        - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MBDIST_PROD}
+        - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MBDIST_PROD}
         - npm run build
-        - sam validate
-        - sam package --template-file template.yaml --s3-bucket prod-milkbox-cloudformation-templates --output-template-file out.yaml
-        - sam deploy --template-file ./out.yaml --stack-name mb-funnels-distributor-production --capabilities CAPABILITY_IAM --parameter-overrides Environment=production
+        - serverless deploy --stage production --deploymentbucket milkbox-cloudformation-templates --assetsbucket ${AWS_BUCKET_MBDIST_ASSETS_PROD} -v

@@ -16,12 +16,12 @@ module.exports = {
     credentials: {
         aws: {
             region: 'us-east-1',
-            bucket: '${process.env.awsBucket}',
-            accessKeyId: '${process.env.accessKeyId}',
-            secretAccessKey: '${process.env.secretAccessKey}'
+            bucket: '${process.env.destAwsBucket}',
+            accessKeyId: '${process.env.destAwsAccessKeyId}',
+            secretAccessKey: '${process.env.destAwsSecretAccessKey}'
         },
         google: {
-            bucket: '${process.env.googleBucket}'
+            bucket: '${process.env.destGoogleBucket}'
         }
     }
 }
