@@ -4,6 +4,7 @@ const {Storage} = require('@google-cloud/storage');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const uuidv4 = require('uuid/v4');
 
 exports.getSourceObject = async (event) => {
     let bucket;
@@ -30,12 +31,12 @@ exports.getSourceObject = async (event) => {
     };
 }
 
-exports.copyBucketObject = async (sourceObject) => {
+exports.copyBucketObject = async (object) => {
     let promises = [];
 
     promises.push(new Promise((resolve, reject) => {
-        exports.copyBucketObjectAws(sourceObject);
-        exports.copyBucketObjectGoogle(sourceObject);
+        exports.copyBucketObjectAws(object);
+        exports.copyBucketObjectGoogle(object);
     }));
 
     return Promise.all(promises);
@@ -68,7 +69,7 @@ exports.copyBucketObjectGoogle = async (object) => {
     const bucket = storage.bucket(bucketName);
 
     let filename = path.basename('/' + object.Key);
-    let filePath = os.tmpdir() + '/' + filename;
+    let filePath = os.tmpdir() + '/' + uuidv4() + '-' + filename;
     fs.writeFileSync(filePath, object.Body.toString());
     let destination = object.Key;
 

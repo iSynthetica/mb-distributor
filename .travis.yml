@@ -16,6 +16,22 @@ jobs:
   include:
     - stage: deploy
       name: Milkbox Funnels Distributor to Staging
+      if: type = push AND tag =~ ^development-deploy-.*$
+      env:
+        - environment=development
+        - destGoogleBucket=${GOOGLE_BUCKET_MBDIST_DEST_DEV}
+        - destAwsBucket=${AWS_BUCKET_MBDIST_DEST_DEV}
+        - destAwsAccessKeyId=${AWS_ACCESS_KEY_ID_MBDIST_DEST_DEV}
+        - secure: "laLE8nkthxH7dXOlyvVM2IBeYV62zGnnTCGWcgPoEiOFa63w72P5Y9NRdjVvwPn86Om2JSipmdO3k+WZX5lLRkcYufC90sZD/Jz39DFIfao5RU2F+5ogi7zwuDz270fNQlyNajChr2m9Yll7mi6jROQ309UmstHWkHkr8Iqg8Qiat1VAt4ZVk0/dv7guTpZij9s+9Ne4PhrRH5/gCOjV2tB7jstirMzogrY95+i2rDnm6/AXrQahWHz4B7jBGCuEKQOAjmspkyptenPcHA2xx9MT7cnbP+19hRnwZcgGxPCjzKCceqYpY7+RrqfwP9NcsuvzaWeOrbEi28Ub1FHFVFBF0lBz/tnyIW2y/E5iyUhTqqUuCuYW6dh++SBZZgu+ba1b6/GnuL/QUA4efXs/LOOTWzMzbY7nQOwGBYTy84j0qmcj6HvkLuJ2c2lDntT9DGCaYwl382mFUtCcCxJh278cwRKdtykc9aV1fBKwNhrSQvVF6ZXZE2KT0eo3LGAzwOZX4kG0/fYICEHaj7rqqss8Zb3P91ymuJVJxMmk0JBVUEOJe7rttN/MOMPLKb/Q3pe6hcG5uOrB9blMe7oW5qLBmlPNAUNBOXPP+QxPdgQXKo99RyY8x94F3OBnx2CsylfnXHeClGflOChbbkkzo0y7ytt7laLiLOi2C8LQTqU="
+
+      script:
+        - openssl aes-256-cbc -K $encrypted_c827e404b518_key -iv $encrypted_c827e404b518_iv -in dependencies/nodejs/key-development.json.enc -out dependencies/nodejs/key.json -d
+        - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MBDIST_DEV}
+        - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MBDIST_DEV}
+        - npm run build
+        - serverless deploy --stage development --deploymentbucket milkbox-cloudformation-templates --assetsbucket ${AWS_BUCKET_MBDIST_ASSETS_DEV} -v
+    - stage: deploy
+      name: Milkbox Funnels Distributor to Staging
       if: type = push AND tag =~ ^staging-deploy-.*$
       env:
         - environment=staging
@@ -24,6 +40,7 @@ jobs:
         - destAwsAccessKeyId=${AWS_ACCESS_KEY_ID_MBDIST_DEST_STAGING}
         - destAwsSecretAccessKey=${AWS_SECRET_ACCESS_KEY_MBDIST_DEST_STAGING}
       script:
+        - openssl aes-256-cbc -K $encrypted_4ef207d3c05c_key -iv $encrypted_4ef207d3c05c_iv -in dependencies/nodejs/key-staging.json.enc -out dependencies/nodejs/key.json -d
         - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MBDIST_STAGING}
         - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MBDIST_STAGING}
         - npm run build
@@ -38,6 +55,7 @@ jobs:
         - destAwsAccessKeyId=${AWS_ACCESS_KEY_ID_MBDIST_DEST_PROD}
         - destAwsSecretAccessKey=${AWS_SECRET_ACCESS_KEY_MBDIST_DEST_PROD}
       script:
+        - openssl aes-256-cbc -K $encrypted_cdd0f05336e4_key -iv $encrypted_cdd0f05336e4_iv -in dependencies/nodejs/key-production.json.enc -out dependencies/nodejs/key.json -d
         - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MBDIST_PROD}
         - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MBDIST_PROD}
         - npm run build
